@@ -8,7 +8,7 @@
 <meta name="keywords" content="admin, estimates, bootstrap, business, corporate, creative, invoice, html5, responsive, Projects">
 <meta name="author" content="Dreamguys - Bootstrap Admin Template">
 <meta name="robots" content="noindex, nofollow">
-<title>Dreams Pos admin template</title>
+<title>Management Employee Loan</title>
 
 <link rel="shortcut icon" href="https://dreamspos.dreamguystech.com/laravel/template/public/assets/img/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -43,7 +43,7 @@
 <div class="login-content">
 <div class="login-userset">
 <div class="login-logo">
-<img src="https://dreamspos.dreamguystech.com/laravel/template/public/assets/img/logo.png" alt="img">
+<img src="{{asset('assets/img/logo-loans.png')}}" alt="img">
 </div>
 <div class="login-userheading">
 <h3>Sign In</h3>
@@ -80,28 +80,8 @@
 <div class="form-login">
 <button class="btn btn-login" type="submit">Sign In</button>
 </div>
-<div class="signinform text-center">
-<h4>Don’t have an account? <a href={{route('register')}} class="hover-a">Sign Up</a></h4>
-</div>
-<div class="form-setlogin">
-<h4>Or sign up with</h4>
-</div>
-<div class="form-sociallink">
-<ul>
-<li>
-<a href="javascript:void(0);">
-<img src="https://dreamspos.dreamguystech.com/laravel/template/public/assets/img/icons/google.png" class="me-2" alt="google">
-Sign Up using Google
-</a>
-</li>
-<li>
-<a href="javascript:void(0);">
-<img src="https://dreamspos.dreamguystech.com/laravel/template/public/assets/img/icons/facebook.png" class="me-2" alt="google">
-Sign Up using Facebook
-</a>
-</li>
-</ul>
-</div>
+
+
 </div>
 </div>
 <div class="login-img">

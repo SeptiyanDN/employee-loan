@@ -121,6 +121,13 @@ $(document).ready(function(){
             "responsive":true,
 			"sDom": 'fBtlpi',
 			"ordering": true,
+            "buttons": [
+                'copy',
+                'excel',
+                'csv',
+                'pdf',
+                'print'
+             ],
 		});
 	}
 	// Loader

@@ -25,18 +25,8 @@ class LoginController extends Controller
 
         if(Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            $tenantID = DB::table('tenant_user')->where('user_id',auth()->user()->id)->first();
-            if($tenantID == null){
-                return redirect('onboardWizard');
-            }
-            $tenant= DB::table('tenants')->where('id',$tenantID->tenant_id)->first();
-        $mainDomain = str_replace('://' , '://' . $tenant->subdomain . '.' , config('app.url'));
-        $users = auth()->user();
-
-        $message = "Berhasil Login Melalui \n{$request->server('HTTP_USER_AGENT')}";
-        NotificationHelpers::sendNotification($users,$message);
-        return redirect ($mainDomain)->with('session','Berhasil Login');
         };
+        return redirect ('/')->with('session','Berhasil Login');
 
         }
 }

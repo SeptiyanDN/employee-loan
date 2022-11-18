@@ -15,13 +15,10 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
-        IndoRegionProvinceSeeder::class,
-        IndoRegionRegencySeeder::class,
-        IndoRegionDistrictSeeder::class,
-        IndoRegionVillageSeeder::class,
         RolesAndPermissionsSeeder::class,
-        deskripsi_pemasukan::class,
-        DeskripsiPengeluaranSeeder::class,
+        UserTableSeeder::class,
+        StatusTableSeeder::class,
+        TypeLoanTableSeeder::class
         ]);
     }
 }

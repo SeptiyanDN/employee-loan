@@ -14,6 +14,9 @@ class AssignController extends Controller
         $this->middleware(['auth','verified']);
     }
     public function create(){
+        // $roles = Role::get();
+        // dd($roles);
+
         return view('module.role_permission.assign.create',[
         'roles' => Role::get(),
         'permissions' => Permission::get()

@@ -25,17 +25,17 @@ class Navbar extends Component
      */
     public function render()
     {
-        $tenant = DB::table('tenants')
-        ->leftJoin('tenant_user','tenant_user.tenant_id', '=', 'tenants.id')
-        ->where('tenant_user.user_id',auth()->user()->id)
-        ->select(
-            'tenants.name as name',
-            'tenants.id as id'
-         )
-         ->get();
+        // $tenant = DB::table('tenants')
+        // ->leftJoin('tenant_user','tenant_user.tenant_id', '=', 'tenants.id')
+        // ->where('tenant_user.user_id',auth()->user()->id)
+        // ->select(
+        //     'tenants.name as name',
+        //     'tenants.id as id'
+        //  )
+        //  ->get();
 
-        $current_tenant = Tenant::where('id',auth()->user()->current_tenant_id)
-        ->first();
-        return view('components.layouts.navbar',compact('tenant','current_tenant'));
+        // $current_tenant = Tenant::where('id',auth()->user()->current_tenant_id)
+        // ->first();
+        return view('components.layouts.navbar');
     }
 }

@@ -3,7 +3,7 @@
 
         <div class="header-left active">
         <a href="index.html" class="logo">
-        <img src={{asset("assets/img/logo.png")}} alt="">
+        <img src={{asset("assets/img/logo-baru.jpeg")}} alt="">
         </a>
         <a href="index.html" class="logo-small">
         <img src={{asset("assets/img/logo-small.png")}} alt="">
@@ -21,37 +21,6 @@
         </a>
 
         <ul class="nav user-menu">
-            <li class="nav-item">
-        <div class="top-nav-search">
-        <a href="javascript:void(0);" class="responsive-search">
-        <i class="fa fa-search"></i>
-        </a>
-        <form action="#">
-        <div class="searchinputs">
-        <input type="text" placeholder="Search Here ...">
-        <div class="search-addon">
-        <span><img src={{asset("assets/img/icons/closes.svg")}} alt="img"></span>
-        </div>
-        </div>
-        <a class="btn" id="searchdiv"><img src={{asset("assets/img/icons/search.svg")}} alt="img"></a>
-        </form>
-        </div>
-        </li>
-
-        <li class="nav-item dropdown has-arrow flag-nav">
-        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="javascript:void(0);" role="button">
-            <i data-feather="award"></i> {{$current_tenant->name}}
-        </a>
-        <div class="dropdown-menu dropdown-menu-right">
-            @foreach ($tenant as $data)
-            <a href="{{route('tenants.change',$data->id)}}" class="dropdown-item">
-                <i data-feather="award"></i> {{$data->name}}
-                </a>
-            @endforeach
-
-        </div>
-        </li>
-
 
         <li class="nav-item dropdown">
         <a href="javascript:void(0);" class="dropdown-toggle nav-link" data-bs-toggle="dropdown">

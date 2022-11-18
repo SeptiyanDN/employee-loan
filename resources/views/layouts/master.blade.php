@@ -31,6 +31,8 @@
 
 <link rel="stylesheet" href={{asset("assets/css/style.css")}}>
 <link rel="stylesheet" href="/assets/css/styles.css">
+<link rel="stylesheet" href={{asset("assets/plugins/twitter-bootstrap-wizard/form-wizard.css")}}>
+
 
 @stack('css')
 
@@ -87,7 +89,15 @@
 <script src={{asset("assets/js/plugins/toastr/toastr.min.js")}}></script>
 
 <script src={{asset("assets/js/script.js")}}></script>
+<script src={{asset("assets/plugins/twitter-bootstrap-wizard/jquery.bootstrap.wizard.min.js")}}></script>
+<script src={{asset("assets/plugins/twitter-bootstrap-wizard/prettify.js")}}></script>
+<script src={{asset("assets/plugins/twitter-bootstrap-wizard/form-wizard.js")}}></script>
 
+<script>
+    $(document).ready(function() {
+    $('.select2').select2();
+});
+</script>
 
 @stack('scripts')
 

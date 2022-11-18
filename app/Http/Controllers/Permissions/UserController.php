@@ -19,37 +19,7 @@ class UserController extends Controller
     }
 
     public function index(){
-        if($user = Auth::user()->roles[0]->name == 'admin'){
-            $users = User::join('tenant_user', 'tenant_user.user_id', '=', 'users.id')
-            ->join('tenants','tenants.id','=','tenant_user.tenant_id')
-            ->where('tenant_user.pemilik',auth()->user()->id )
-            ->whereNot('tenant_user.user_id','=',auth()->user()->id)
-            ->get(['users.*','tenants.name as nama_cabang']);
-        } else {
-            $users = User::join('tenant_user', 'tenant_user.user_id', '=', 'users.id')
-            ->join('tenants','tenants.id','=','tenant_user.tenant_id')
-            ->where('tenant_user.tenant_id',auth()->user()->current_tenant_id )
-            ->get(['users.*','tenants.name as nama_cabang']);
-        }
-
-
-        return view('module.users.index',compact('users'));
-    }
-    public function createUsers(){
-
-        return view('module.users.tambahuser.index',[
-            'roles' => DB::table('roles')
-            ->whereNotIn('name',['tamu','super admin'])
-            ->get(),
-            'tenants' => DB::table('tenants')
-            ->leftJoin('tenant_user','tenant_user.tenant_id' ,'=','tenants.id')
-            ->Where('tenant_user.user_id',auth()->user()->id)
-            ->select(
-                'tenants.name as name',
-                'tenants.id as id'
-            )
-            ->get(),
-        ]);
+    //
     }
 
     public function tambahUser(Request $request){
@@ -76,7 +46,7 @@ class UserController extends Controller
     public function create(){
         return view('module.role_permission.assign.user.create',[
             'roles'=>Role::get(),
-            'users'=>User::has('roles')->where('current_tenant_id',auth()->user()->current_tenant_id)->get()
+            'users'=>User::has('roles')->get()
         ]);
     }
 
@@ -101,6 +71,6 @@ class UserController extends Controller
      }
 
      public function profileSetting(){
-        return view('module.users.profile.index');
+        return view('module.employee.profile.index');
      }
 }

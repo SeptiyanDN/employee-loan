@@ -4,8 +4,10 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\kategoriController;
+use App\Http\Controllers\LoanApplicationsController;
 use App\Http\Controllers\MerekController;
 use App\Http\Controllers\OutletController;
 use App\Http\Controllers\PemasukanController;
@@ -17,6 +19,7 @@ use App\Http\Controllers\Permissions\PermissionController;
 use App\Http\Controllers\Permissions\RoleController;
 use App\Http\Controllers\Permissions\UserController;
 use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\TenantController;
@@ -57,91 +60,47 @@ Route::prefix('auth')->group(function(){
 });
 
 Route::middleware(['has.role','auth'])->group(function(){
-
     Route::get('/',[HomeController::class,'index']);
     Route::get('/onboardWizard',[RegisterController::class,'onboardWizard']);
-
-    Route::prefix('pembelian')->group(function(){
-        // Route::get('/',[PembelianController::class,'index'])->name('pembelian.index');
-        Route::get('/json', [PembelianController::class, 'data'])->name('pembelian.data');
-        Route::get('/{id}/create', [PembelianController::class, 'create'])->name('pembelian.create');
-        Route::resource('/',PembelianController::class)
-        ->except('create');
-
+    Route::prefix('reports-loans')->group(function(){
+        Route::get('/overdue/json',[ReportsController::class,'jsonOverdue'])->name('json.overdue');
+        Route::get('/overdue',[ReportsController::class,'overdue'])->name('reports.overdue');
+        Route::get('/complete/json',[ReportsController::class,'jsonComplete'])->name('json.complete');
+        Route::get('/complete',[ReportsController::class,'complete'])->name('reports.complete');
+        Route::get('/outstanding/json',[ReportsController::class,'jsonOutstanding'])->name('json.outstanding');
+        Route::get('/outstanding',[ReportsController::class,'outstanding'])->name('reports.outstanding');
     });
-    Route::get('/pembelian_detail/{id}/data', [PembelianDetailController::class, 'data'])->name('pembelian_detail.data');
-    Route::get('/pembelian_detail/loadform/{diskon}/{total}', [PembelianDetailController::class, 'loadForm'])->name('pembelian_detail.load_form');
-    Route::resource('/pembelian_detail', PembelianDetailController::class)
-    ->except('create', 'show', 'edit');
+    Route::prefix('loan-applications')->group(function(){
+        Route::get('/',[LoanApplicationsController::class,'index'])->name('loans.index');
+        Route::get('/json',[LoanApplicationsController::class,'json'])->name('loans.json');
+        Route::get('/create',[LoanApplicationsController::class,'create'])->name('loans.create');
+        Route::get('/{loanApplications}/edit',[LoanApplicationsController::class,'edit'])->name('loans.edit');
+        Route::put('/{loanApplications}/edit',[LoanApplicationsController::class,'update'])->name('loans.update');
 
-    Route::prefix('kelola-kas')->group(function(){
-        Route::prefix('pemasukan')->group(function(){
-            Route::get('/',[PemasukanController::class,'index'])->name('pemasukan.index');
-            Route::get('/create',[PemasukanController::class,'create'])->name('pemasukan.create');
-            Route::get('/json',[PemasukanController::class,'data'])->name('pemasukan.data');
-            Route::post('/',[PemasukanController::class,'store'])->name('pemasukan.store');
-            Route::get('/{id}',[PemasukanController::class,'show'])->name('pemasukan.show');
-            Route::put('/{pemasukan}',[PemasukanController::class,'update'])->name('pemasukan.update');
-            Route::delete('/{id}',[PemasukanController::class,'destroy'])->name('pemasukan.destroy');
-            Route::post('/delete-selected', [PemasukanController::class, 'deleteSelected'])->name('pemasukan.delete_selected');
-            Route::get('/detail/{pemasukan}',[PemasukanController::class,'detailPemasukan'])->name('pemasukan.detail');
-        });
-
-        Route::prefix('pengeluaran')->group(function(){
-            Route::get('/',[PengeluaranController::class,'index'])->name('pengeluaran.index');
-            Route::get('/create',[PengeluaranController::class,'create'])->name('pengeluaran.create');
-            Route::get('/json',[PengeluaranController::class,'data'])->name('pengeluaran.data');
-            Route::post('/',[PengeluaranController::class,'store'])->name('pengeluaran.store');
-            Route::get('/{id}',[PengeluaranController::class,'show'])->name('pengeluaran.show');
-            Route::get('/detail/{pengeluaran}',[PengeluaranController::class,'detailPengeluaran'])->name('pengeluaran.detail');
-            Route::put('/{pengeluaran}',[PengeluaranController::class,'update'])->name('pengeluaran.update');
-            Route::delete('/{id}',[PengeluaranController::class,'destroy'])->name('pengeluaran.destroy');
-            Route::post('/delete-selected', [PengeluaranController::class, 'deleteSelected'])->name('pengeluaran.delete_selected');
-        });
+        Route::get('/{loanApplications}/show',[LoanApplicationsController::class,'show'])->name('loans.show');
+        Route::get('/{loanApplications}/analyst/approval',[LoanApplicationsController::class,'approveAnalyst'])->name('loans.approveAnalyst');
+        Route::put('/{loanApplications}/analyst/approval',[LoanApplicationsController::class,'approveAnalystService'])->name('loans.approveAnalystService');
+        Route::get('/{loanApplications}/ceo/approval',[LoanApplicationsController::class,'approveCeo'])->name('loans.approveCeo');
+        Route::put('/{loanApplications}/ceo/approval',[LoanApplicationsController::class,'approveCeoService'])->name('loans.approveCeoService');
+        Route::get('/{loanApplications}/sending/money',[LoanApplicationsController::class,'sendingMoney'])->name('loans.sendingMoney');
+        Route::put('/{loanApplications}/sending/money',[LoanApplicationsController::class,'sendingMoneyService'])->name('loans.sendingMoneyService');
+        Route::post('/create',[LoanApplicationsController::class,'store']);
+    Route::prefix('analyst')->group(function(){
+        Route::get('/prosses',[LoanApplicationsController::class,'analystProses'])->name('analyst.proses');
     });
-    Route::prefix('products')->group(function(){
-        Route::prefix('kategori')->group(function(){
-            Route::get('/',[kategoriController::class,'index']);
-            Route::post('/',[kategoriController::class,'store'])->name('tambah.kategori');
-        });
-        Route::prefix('merek')->group(function(){
-            Route::get('/',[MerekController::class,'index']);
-            Route::post('/',[MerekController::class,'store'])->name('tambah.merek');
-        });
-        Route::get('/',[ProdukController::class,'index'])->name('index.produk');
-        Route::get('/json',[ProdukController::class,'data'])->name('produk.data');
-
-        Route::get('/tambah',[ProdukController::class,'create']);
-        Route::post('/tambah',[ProdukController::class,'store'])->name('tambah.produk');
-        Route::delete('/{id}',[ProdukController::class,'remove'])->name('remove.produk');
-        Route::get('/{produk}/edit',[ProdukController::class,'edit'])->name('edit.produk');
-        Route::put('/{produk}/edit',[ProdukController::class,'update']);
-        Route::delete('/{produk}',[ProdukController::class,'remove'])->name('remove.produk');
-        Route::post('/delete-selected', [ProdukController::class, 'deleteSelected'])->name('produk.delete_selected');
+    Route::prefix('ceo')->group(function(){
+        Route::get('/prosses',[LoanApplicationsController::class,'ceoProses'])->name('ceo.proses');
     });
-
-    Route::prefix('users')->group(function(){
-        Route::get('/create',[UserController::class,'createUsers']);
-        Route::post('/create',[UserController::class,'tambahUser'])->name('users.create');
-        Route::get('/management',[UserController::class,'index'])->name('users.management');
+    });
+    Route::prefix('employee')->group(function(){
+        Route::get('/create',[EmployeeController::class,'createEmployee']);
+        Route::post('/create',[EmployeeController::class,'store'])->name('users.create');
+        Route::get('/{employee}/detail',[EmployeeController::class,'show'])->name('employee.detail');
+        Route::get('/{employee}/edit',[EmployeeController::class,'edit'])->name('employee.edit');
+        Route::put('/{employee}/edit',[EmployeeController::class,'update']);
+        Route::get('/management',[EmployeeController::class,'index'])->name('users.management');
         Route::get('/settings',[UserController::class,'profileSetting'])->name('profile');
-    });
-
-    Route::prefix('outlet')->group(function(){
-        Route::get('/tambah-outlet',[TenantController::class,'tambahOutlet']);
-        Route::get('/',[TenantController::class,'index'])->name('outlet');
-        Route::get('/json',[TenantController::class,'json'])->name('json');
-        Route::post('/',[TenantController::class,'store'])->name('create-outlet');
-        Route::get('/{id}',[OutletController::class,'show'])->name('update-outlet');
-        Route::put('/{id}',[OutletController::class,'update']);
-        Route::delete('/{id}',[OutletController::class,'destroy'])->name('remove-outlet');
-        Route::get('/change/{tenantID}',[TenantController::class, 'changeTenant'])->name('tenants.change');
-    });
-
-    Route::prefix('suppliers')->group(function(){
-        Route::get('/',[SupplierController::class,'index'])->name('index.supplier');
-        Route::get('/tambah',[SupplierController::class,'create']);
-        Route::post('/tambah',[SupplierController::class,'store'])->name('tambah.supplier');
+        Route::delete('/{employee}/remove',[EmployeeController::class,'destroy'])->name('employee.remove');
     });
 
     Route::prefix('role-and-permission')->namespace('Permissions')->group(function(){
