@@ -34,9 +34,11 @@ class LoanApplications extends Model {
     protected static $logAttributes = ['number_application','status_id','description'];
 
 
-    public function employee(){
-        return $this->hasOne(Employee::class,'id');
+       public function Employee()
+    {
+        return $this->belongsTo('App\Models\Employee','employee_id','id');
     }
+
     public function status(){
         return $this->belongsTo(Status::class);
     }

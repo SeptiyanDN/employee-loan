@@ -162,7 +162,7 @@ class LoanApplicationsController extends Controller
 
     public function show(LoanApplications $loanApplications)
     {
-        $loan = LoanApplications::find($loanApplications)->first();
+        $loan = LoanApplications::all()->find($loanApplications);
 
         $logs = Activity::where('subject_id',$loanApplications->id)
         ->leftJoin('users','users.id','activity_log.causer_id')
@@ -174,11 +174,12 @@ class LoanApplicationsController extends Controller
             $loan->mountly_installment = Helpers::format_uang($loan->mountly_installment);
             $loan->due_date = Helpers::tanggal_indonesia($loan->due_date);
         }
+       
      return view('module.loans.application_loans.show',compact('loan','logs'));
     }
 
     public function approveAnalyst(LoanApplications $loanApplications){
-        $loan = LoanApplications::find($loanApplications)->first();
+        $loan = LoanApplications::all()->find($loanApplications);
 
         $status = Status::whereIn('id', array(2,3))->get();
 
@@ -189,7 +190,7 @@ class LoanApplicationsController extends Controller
 
 
     public function approveAnalystService(Request $request,LoanApplications $loanApplications){
-        $loan = LoanApplications::find($loanApplications)->first();
+        $loan = LoanApplications::all()->find($loanApplications);
         $comments = Comments::create([
             'comments' => $request->comments,
             'user_id' => auth()->user()->id,
@@ -203,7 +204,7 @@ class LoanApplicationsController extends Controller
     }
 
     public function approveCeo(loanApplications $loanApplications){
-        $loan = LoanApplications::find($loanApplications)->first();
+        $loan = LoanApplications::all()->find($loanApplications);
         // $status = Status::all();
         $status = Status::whereIn('id', array(4,5))->get();
 
@@ -211,7 +212,7 @@ class LoanApplicationsController extends Controller
     }
 
     public function approveCeoService(Request $request,LoanApplications $loanApplications){
-        $loan = LoanApplications::find($loanApplications)->first();
+        $loan = LoanApplications::all()->find($loanApplications);
         Comments::create([
             'comments' => $request->comments,
             'user_id' => auth()->user()->id,
@@ -225,14 +226,14 @@ class LoanApplicationsController extends Controller
         return redirect()->route('loans.show',$loan->id);
     }
     public function sendingMoney(loanApplications $loanApplications){
-        $loan = LoanApplications::find($loanApplications)->first();
+        $loan = LoanApplications::all()->find($loanApplications);
         $status = Status::where('id',6)->get();
         $bank = EmployeeBank::where('employee_id',$loan->employee->id)->first();
         return view('module.loans.application_loans.sendingMoney',compact('loan','status','bank'));
     }
 
     public function sendingMoneyService(Request $request,LoanApplications $loanApplications){
-        $loan = LoanApplications::find($loanApplications)->first();
+        $loan = LoanApplications::all()->find($loanApplications);
         $employee = Employee::where('id',$loan->employee_id)->first();
         if($request->hasFile('image') === false ) {
             return redirect()->route('loans.sendingMoney',$loan->id)->with('success','bukti transfer harus di masukan');
@@ -267,7 +268,7 @@ class LoanApplicationsController extends Controller
     public function edit(LoanApplications $loanApplications)
     {
         $typeloans = TypeLoan::all();
-        $loan = LoanApplications::find($loanApplications)->first();
+        $loan = LoanApplications::all()->find($loanApplications);
 
         return view('module.loans.application_loans.update',compact('loan','typeloans'));
     }
@@ -275,7 +276,7 @@ class LoanApplicationsController extends Controller
 
     public function update(Request $request, LoanApplications $loanApplications)
     {
-        $loan = LoanApplications::find($loanApplications)->first();
+        $loan = LoanApplications::all()->find($loanApplications);
 
         $loan->update([
             'typeLoan_id' => $request->typeLoan_id,

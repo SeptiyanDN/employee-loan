@@ -18,5 +18,7 @@ class Employee extends Model
         'haveAloan',
         'user_id'
     ];
-
+    public function LoanApplication(){
+        return $this->hasOne('App\Models\LoanApplication','id');
+    }
 }
