@@ -97,7 +97,6 @@ class RolesAndPermissionsSeeder extends Seeder
                 'user_edit',
                 'user_access',
                 'user_show',
-                'user_access',
                 'status_create',
                 'status_edit',
                 'status_show',
@@ -128,8 +127,10 @@ class RolesAndPermissionsSeeder extends Seeder
              ->givePermissionTo([
                 // dipakai
                 'analyst_proccesing',
+                'user_management_access',
                 // end
                 'status_create',
+                'user_access',
                 'status_edit',
                 'status_show',
                 'status_access',

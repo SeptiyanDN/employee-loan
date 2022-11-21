@@ -21,6 +21,7 @@
                 <a href="{{route('loans.create')}}"><i data-feather="layers"></i><span> New Loans</span> </a>
             </li>
             @endcan
+            @can('loan_application_access')
             <li class="submenu">
                 <a href="javascript:void(0);"><img src={{asset("assets/img/icons/expense1.svg")}} alt="img"><span> Application Loans</span> <span class="menu-arrow"></span></a>
                 <ul>
@@ -33,6 +34,8 @@
                 @endcan
                 </ul>
             </li>
+            @endcan
+            @can('user_management_access')
 
         <li class="submenu">
             <a href="javascript:void(0);"><img src={{asset("assets/img/icons/users1.svg")}} alt="img"><span> Employee</span> <span class="menu-arrow"></span></a>
@@ -46,6 +49,8 @@
             @endcan
             </ul>
         </li>
+        @endcan
+
         @can('role_access')
         <li class="submenu">
             <a href="javascript:void(0);"><i data-feather="shield"></i> <span>Management Role & Permission </span> <span class="menu-arrow"></span></a>
