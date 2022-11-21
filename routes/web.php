@@ -61,6 +61,8 @@ Route::prefix('auth')->group(function(){
 
 Route::middleware(['has.role','auth'])->group(function(){
     Route::get('/',[HomeController::class,'index']);
+    Route::get('/loan',[HomeController::class,'dashboardUsers']);
+
     Route::get('/onboardWizard',[RegisterController::class,'onboardWizard']);
     Route::prefix('reports-loans')->group(function(){
         Route::get('/overdue/json',[ReportsController::class,'jsonOverdue'])->name('json.overdue');

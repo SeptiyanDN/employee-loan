@@ -48,6 +48,9 @@ class RolesAndPermissionsSeeder extends Seeder
 
       Permission::create(['name'=>'settings']);
       Permission::create(['name'=>'reports']);
+
+      Permission::create(['name' => 'dashboard_employee']);
+      Permission::create(['name' => 'dashboard_admin']);
 // end
 
          Permission::create(['name' => 'role_create']);
@@ -107,6 +110,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'comment_show',
                 'comment_access',
                 'profile_password_edit',
+                'dashboard_admin',
 
 
 
@@ -116,6 +120,7 @@ class RolesAndPermissionsSeeder extends Seeder
          $role = Role::create(['name' => 'Employee'])
             ->givePermissionTo([
                 'profile_password_edit',
+                'dashboard_employee',
             ]);
 
          // or may be done by chaining
@@ -136,7 +141,8 @@ class RolesAndPermissionsSeeder extends Seeder
                 'comment_access',
                 'profile_password_edit',
                 'analyst_approve',
-                'analyst_reject'
+                'analyst_reject',
+                'dashboard_admin',
             ]);
 
         //  $role = Role::create(['name' => 'CEO'])
