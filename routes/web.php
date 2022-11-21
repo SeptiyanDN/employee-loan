@@ -96,7 +96,7 @@ Route::middleware(['has.role','auth'])->group(function(){
     });
     Route::prefix('employee')->middleware(['can:user_management_access'])->group(function(){
         Route::get('/create',[EmployeeController::class,'createEmployee']);
-        Route::post('/create',[EmployeeController::class,'store'])->name('users.create');
+        Route::post('/create',[EmployeeController::class,'store'])->middleware(['can:user_create'])->name('users.create');
         Route::get('/{employee}/detail',[EmployeeController::class,'show'])->name('employee.detail');
         Route::get('/{employee}/edit',[EmployeeController::class,'edit'])->name('employee.edit');
         Route::put('/{employee}/edit',[EmployeeController::class,'update']);
