@@ -94,7 +94,7 @@ Route::middleware(['has.role','auth'])->group(function(){
         Route::get('/prosses',[LoanApplicationsController::class,'ceoProses'])->name('ceo.proses');
     });
     });
-    Route::prefix('employee')->group(function(){
+    Route::prefix('employee')->middleware(['can:user_management_access'])->group(function(){
         Route::get('/create',[EmployeeController::class,'createEmployee']);
         Route::post('/create',[EmployeeController::class,'store'])->name('users.create');
         Route::get('/{employee}/detail',[EmployeeController::class,'show'])->name('employee.detail');
