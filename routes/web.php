@@ -60,8 +60,8 @@ Route::prefix('auth')->group(function(){
 });
 
 Route::middleware(['has.role','auth'])->group(function(){
-    Route::get('/',[HomeController::class,'index']);
-    Route::get('/loan',[HomeController::class,'dashboardUsers']);
+    Route::get('/',[HomeController::class,'index'])->middleware('users.role');
+    Route::get('/myloan',[HomeController::class,'dashboardUsers'])->name('myloan');
 
     Route::get('/onboardWizard',[RegisterController::class,'onboardWizard']);
     Route::prefix('reports-loans')->group(function(){
@@ -73,7 +73,7 @@ Route::middleware(['has.role','auth'])->group(function(){
         Route::get('/outstanding',[ReportsController::class,'outstanding'])->name('reports.outstanding');
     });
     Route::prefix('loan-applications')->group(function(){
-        Route::get('/',[LoanApplicationsController::class,'index'])->name('loans.index');
+        Route::get('/',[LoanApplicationsController::class,'index'])->name('loans.index')->middleware('users.role');
         Route::get('/json',[LoanApplicationsController::class,'json'])->name('loans.json');
         Route::get('/create',[LoanApplicationsController::class,'create'])->name('loans.create');
         Route::get('/{loanApplications}/edit',[LoanApplicationsController::class,'edit'])->name('loans.edit');
@@ -92,6 +92,10 @@ Route::middleware(['has.role','auth'])->group(function(){
     });
     Route::prefix('ceo')->group(function(){
         Route::get('/prosses',[LoanApplicationsController::class,'ceoProses'])->name('ceo.proses');
+    });
+    Route::prefix('employees')->group(function(){
+        Route::get('/payment/now',[LoanApplicationsController::class,'loanpaymentindex'])->name('loanpayment.index');
+        Route::post('/payment/now',[LoanApplicationsController::class,'loanpaymentstore'])->name('loanpayment.store');
     });
     });
     Route::prefix('employee')->middleware(['can:user_management_access'])->group(function(){

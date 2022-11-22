@@ -6,7 +6,6 @@ use Closure;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 
-use function PHPUnit\Framework\isEmpty;
 
 class HasRoleMiddleware
 {

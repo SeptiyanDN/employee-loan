@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Helpers;
+use App\Models\BuktiPembayaranLoan;
 use App\Models\BuktiTransfer;
 use App\Models\Comments;
 use App\Models\Employee;
@@ -174,7 +175,7 @@ class LoanApplicationsController extends Controller
             $loan->mountly_installment = Helpers::format_uang($loan->mountly_installment);
             $loan->due_date = Helpers::tanggal_indonesia($loan->due_date);
         }
-       
+
      return view('module.loans.application_loans.show',compact('loan','logs'));
     }
 
@@ -298,6 +299,54 @@ class LoanApplicationsController extends Controller
         ]);
         return redirect()->route('loans.index')->with('success','Update Loan Application Succeessfully');
     }
+
+    public function loanpaymentindex() {
+        $user = auth()->user();
+        $loanApplications = LoanApplications::leftJoin('employees','employees.id','=','loan_applications.employee_id')
+        ->leftJoin('users','users.id','=','employees.user_id')
+        ->where('users.id',$user->id)
+        ->select('loan_applications.id')
+        ->first();
+        $loan = LoanApplications::all()->find($loanApplications->id);
+        $status = TypeLoan::where('id',$loan->typeLoan_id)->first();
+        $bank = EmployeeBank::where('employee_id',$loan->employee->id)->first();
+        return view('module.loans.application_loans.employee.index',compact('loan','status','bank'));
+    }
+
+    public function loanpaymentstore (Request $request)  {
+        $user = auth()->user();
+        $loanApplications = LoanApplications::leftJoin('employees','employees.id','=','loan_applications.employee_id')
+        ->leftJoin('users','users.id','=','employees.user_id')
+        ->where('users.id',$user->id)
+        ->select('loan_applications.id')
+        ->first();
+        $loan = LoanApplications::all()->find($loanApplications->id);
+        $employee = Employee::where('id',$loan->employee_id)->first();
+        if($request->hasFile('image') === false ) {
+            return redirect()->route('loanpayment.index',$loan->id)->with('success','bukti transfer harus di masukan');
+        }
+            $extension = $request->file('image')->getClientOriginalExtension();
+            $fileNameImage = 'bukti_transfer_pembayaran_pinjaman'.'.'.$extension;
+            $request->file('image')->storeAs('public/documents/'.$employee->nric.'/bukti_transfer/',$fileNameImage);
+            Comments::create([
+                'comments' => 'Has been created new payment loan',
+                'user_id' => auth()->user()->id,
+                'application_loan_id' => $loan->id,
+            ]);
+            $loan->update([
+                'remaining_payment' => $loan->remaining_payment-1,
+            ]);
+
+            BuktiPembayaranLoan::create([
+                'name_employee' => $request->name_employee,
+                'mountly_installment' => $request->mountly_installment,
+                'image' => $fileNameImage,
+                'loan_application_id' => $loan->id
+            ]);
+            return redirect()->route('loans.show',$loan->id);
+
+    }
+
     public function destroy(LoanApplications $loanApplications)
     {
         //

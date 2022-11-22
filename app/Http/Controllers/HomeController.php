@@ -50,6 +50,24 @@ class HomeController extends Controller
     }
 
     public function dashboardUsers () {
-        return view('dashboard.users.index');
+        $user = auth()->user();
+        $loanApplications = LoanApplications::leftJoin('employees','employees.id','=','loan_applications.employee_id')
+        ->leftJoin('users','users.id','=','employees.user_id')
+        ->where('users.id',$user->id)
+        ->select('loan_applications.id')
+        ->first();
+        $loan = LoanApplications::all()->find($loanApplications->id);
+
+        $logs = Activity::where('subject_id',$loanApplications->id)
+        ->leftJoin('users','users.id','activity_log.causer_id')
+        ->select('activity_log.*','users.name')
+        ->orderBy('activity_log.created_at', 'ASC')
+        ->get();
+        if($loan != null) {
+            $loan->loan_ammount = Helpers::format_uang($loan->loan_ammount);
+            $loan->mountly_installment = Helpers::format_uang($loan->mountly_installment);
+            $loan->due_date = Helpers::tanggal_indonesia($loan->due_date);
+        }
+        return view('dashboard.users.index',compact('loan','logs','loanApplications'));
     }
 }
