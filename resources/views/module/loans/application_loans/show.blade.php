@@ -42,21 +42,37 @@
                         </tr>
                         <tr>
                             <th>Employee Name</th>
-                            <td>{{ $loan->employee->name }}</td>
+                            <td>
+                                {{ $loan->employee->name }}
+
+                                <a  href={{route('employee.detail',$loan->employee->id)}} class="btn btn-primary btn-sm">Check Employee</a>
+                            </td>
                         </tr>
                         <tr>
                             <th>Loan Ammount</th>
-                            <td>{{ $loan->loan_ammount }}</td>
+                            <td>{{ $loan->loan_ammount }} MYR</td>
+                        </tr>
+
+                        <tr>
+                            <th>Mounthly Installment</th>
+                            <td>{{ $loan->mountly_installment }} MYR</td>
+                        </tr>
+                        <tr>
+                            <th>Charge Fee</th>
+                            <td>{{$loan->charge_fee}} MYR</td>
+                        </tr>
+                        <tr>
+                            <th>Bunga</th>
+                            <td>{{$loan->bunga}} % / Month</td>
+                        </tr>
+                        <tr>
+                            <th>Disbursement to Borrower</th>
+                            <td>{{$loan->disbursement}} MYR</td>
                         </tr>
                         <tr>
                             <th>Status Loan</th>
                             <td>{{ $loan->status->name }}</td>
                         </tr>
-                        <tr>
-                            <th>Mounthly Installment</th>
-                            <td>{{ $loan->mountly_installment }}</td>
-                        </tr>
-
                         @if ($loan->status_id === 1)
                             <tr>
                                 <th>Analyst</th>
@@ -70,6 +86,19 @@
                                 <th>Finance</th>
                                 <td> - </td>
                             </tr>
+                        @elseif ($loan->status_id === 3)
+                        <tr>
+                            <th>Analyst</th>
+                            <td> Rejected By Analyst </td>
+                        </tr>
+                        <tr>
+                            <th>CEO</th>
+                            <td> - </td>
+                        </tr>
+                        <tr>
+                            <th>Finance</th>
+                            <td> - </td>
+                        </tr>
                         @elseif ($loan->status_id === 2)
                             <tr>
                                 <th>Analyst</th>
@@ -83,6 +112,29 @@
                                 <th>Finance</th>
                                 <td> - </td>
                             </tr>
+                        @elseif($loan->status_id === 9)
+                        <tr>
+                            <th>Analyst</th>
+                            <td>Process Review</td>
+                        </tr>
+                        <tr>
+                            <th>CEO</th>
+                            <td> - </td>
+                        </tr>
+                        <tr>
+                            <th>Finance</th>
+                            <td> - </td>
+                        </tr>
+                        @elseif($loan->status_id === 5)
+                        <tr>
+                            <th>Analyst</th>
+                            <td>Approved By Analyst</td>
+                        </tr>
+                        <tr>
+                            <th>CEO</th>
+                            <td> Rejected By CEO </td>
+                        </tr>
+
                         @elseif($loan->status_id === 4)
                             <tr>
                                 <th>Analyst</th>
@@ -193,24 +245,28 @@
                     </table>
                     <div class="col-mb-12">
                         <div class="mb-3 mt-3">
-                            @if ($loan->status_id == 1)
+                            @if ($loan->status_id == 1 || $loan->status_id ==9)
                                 @can('analyst_approve')
                                     <a href="{{ route('loans.approveAnalyst', $loan->id) }}" class="btn btn-primary">Analyst
                                         Approval</a>
-                                    <a href="{{ route('loans.approveAnalyst', $loan->id) }}" class="btn btn-secondary">Analyst
+                                    <a href="{{ route('loans.rejectAnalyst', $loan->id) }}" class="btn btn-secondary">Analyst
                                         Reject</a>
                                 @endcan
                             @elseif($loan->status_id == 2)
                                 @can('ceo_approve')
                                     <a href="{{ route('loans.approveCeo', $loan->id) }}" class="btn btn-success">CEO
                                         Approval</a>
-                                    <a href="{{ route('loans.approveAnalyst', $loan->id) }}" class="btn btn-secondary">CEO
+                                    <a href="{{ route('loans.rejectCEO', $loan->id) }}" class="btn btn-secondary">CEO
                                         Reject</a>
                                 @endcan
                             @elseif($loan->status_id == 4)
                                 @can('sending_money')
                                     <a href="{{ route('loans.sendingMoney', $loan->id) }}" class="btn btn-success">Send
                                         Money</a>
+                                @endcan
+                            @elseif($loan->status_id == 3)
+                                @can('resending_application')
+                                    <a href="{{ route('loans.resendingAnalyst', $loan->id) }}" class="btn btn-success">Resending Application</a>
                                 @endcan
                             @endif
                             <a href="{{ route('loans.index') }}" class="btn btn-danger">back</a>

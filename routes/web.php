@@ -82,6 +82,18 @@ Route::middleware(['has.role','auth'])->group(function(){
         Route::get('/{loanApplications}/show',[LoanApplicationsController::class,'show'])->name('loans.show');
         Route::get('/{loanApplications}/analyst/approval',[LoanApplicationsController::class,'approveAnalyst'])->name('loans.approveAnalyst');
         Route::put('/{loanApplications}/analyst/approval',[LoanApplicationsController::class,'approveAnalystService'])->name('loans.approveAnalystService');
+
+        Route::get('/{loanApplications}/analyst/reject',[LoanApplicationsController::class,'rejectAnalyst'])->name('loans.rejectAnalyst');
+        Route::put('/{loanApplications}/analyst/reject',[LoanApplicationsController::class,'rejectAnalystService'])->name('loans.rejectAnalystService');
+
+        Route::get('/{loanApplications}/ceo/reject',[LoanApplicationsController::class,'rejectCEO'])->name('loans.rejectCEO');
+        Route::put('/{loanApplications}/ceo/reject',[LoanApplicationsController::class,'rejectCEOService'])->name('loans.rejectCEOService');
+
+
+        Route::get('/{loanApplications}/admin/resending',[LoanApplicationsController::class,'resendingAnalyst'])->name('loans.resendingAnalyst')->middleware(['can:resending_application']);
+        Route::put('/{loanApplications}/admin/resending',[LoanApplicationsController::class,'resendingAnalystService'])->name('loans.resendingAnalystService');
+
+
         Route::get('/{loanApplications}/ceo/approval',[LoanApplicationsController::class,'approveCeo'])->name('loans.approveCeo');
         Route::put('/{loanApplications}/ceo/approval',[LoanApplicationsController::class,'approveCeoService'])->name('loans.approveCeoService');
         Route::get('/{loanApplications}/sending/money',[LoanApplicationsController::class,'sendingMoney'])->name('loans.sendingMoney');

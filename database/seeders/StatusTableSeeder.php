@@ -22,11 +22,11 @@ class StatusTableSeeder extends Seeder
             ],
             [
                 'id'   => 2,
-                'name' => 'Analyst approved',
+                'name' => 'Analyst Approved',
             ],
             [
                 'id'   => 3,
-                'name' => 'Analyst rejected',
+                'name' => 'Analyst Rejected',
             ],
             [
                 'id'   => 4,
@@ -48,6 +48,10 @@ class StatusTableSeeder extends Seeder
                 'id' => 8,
                 'name'  => 'Completed'
             ],
+            [
+                'id' => 9,
+                'name' =>'Already Resending to Analyst'
+            ]
         ];
 
         Status::insert($statuses);

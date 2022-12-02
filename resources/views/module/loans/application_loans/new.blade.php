@@ -66,14 +66,14 @@ Create New Application Loan
             </div>
             <div class="col-lg-6">
                 <div class="mb-3">
-                    <label for="">Charge Fee :</label>
-                    <input type="text" class="form-control" id="charge_fee" name="charge_fee" value="0">
+                    <label for="">Charge Fee : ( in percent )</label>
+                    <input type="text" class="form-control" id="charge_fee" name="charge_fee" >
                 </div>
             </div>
             <div class="col-lg-6">
                 <div class="mb-3">
                     <label for="">Bunga :</label>
-                    <input type="text" class="form-control" id="bunga" name="bunga" value="0">
+                    <input type="text" class="form-control" id="bunga" name="bunga" >
                 </div>
             </div>
             <div class="col-lg-12">

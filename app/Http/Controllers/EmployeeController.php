@@ -8,7 +8,9 @@ use App\Models\EmployeeBank;
 use App\Models\EmployeeDocuments;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class EmployeeController extends Controller
@@ -79,14 +81,14 @@ class EmployeeController extends Controller
         if($request->hasFile('card_company')){
             $extension = $request->file('card_company')->getClientOriginalExtension();
             $fileNameCardCompany = 'card_company'.'.'.$extension;
-            $request->file('card_company')->storeAs('public/documents/'.$request->nric,$fileNameProfileImage);
+            $request->file('card_company')->storeAs('public/documents/'.$request->nric,$fileNameCardCompany);
             $documents->card_company = $request->card_company ? $fileNameCardCompany : null;
 
         }
         if($request->hasFile('card_national')){
             $extension = $request->file('card_national')->getClientOriginalExtension();
             $fileNameCardNational = 'card_national'.'.'.$extension;
-            $request->file('card_national')->storeAs('public/documents/'.$request->nric,$fileNameProfileImage);
+            $request->file('card_national')->storeAs('public/documents/'.$request->nric,$fileNameCardNational);
                 $documents->card_national = $request->card_national ? $fileNameCardNational : null;
         }
         $documents->employee_id = $employee->id;
@@ -144,7 +146,8 @@ class EmployeeController extends Controller
                 //    dd($profileImage);
                     $cardCompany =  $data->card_company ? 'http://localhost:8000/storage/documents/'.$data->nric.'/'.$data->card_company : 'https://engineeredsys.com/wp-content/uploads/2019/08/download.png';
                     $cardNational = $data->card_national ? 'http://localhost:8000/storage/documents/'.$data->nric.'/'.$data->card_national : 'https://engineeredsys.com/wp-content/uploads/2019/08/download.png';
-        return view('module.employee.detail',compact('data','profileImage','cardCompany','cardNational'));
+
+                    return view('module.employee.detail',compact('data','profileImage','cardCompany','cardNational'));
     }
 
 
@@ -187,7 +190,6 @@ class EmployeeController extends Controller
 
     public function update(Request $request, Employee $employee)
     {
-
         $employee->update([
             'name' => $request->name,
             'nric' => $request->nric,
@@ -196,53 +198,33 @@ class EmployeeController extends Controller
         ]);
 
         $documents = EmployeeDocuments::where('employee_id',$employee->id)->first();
-        if ($documents == null) {
-            $documents = new EmployeeDocuments();
-            if($request->hasFile('profile_image')){
-                $extension = $request->file('profile_image')->getClientOriginalExtension();
-                $fileNameProfileImage = 'profile_image'.'.'.$extension;
-                $request->file('profile_image')->storeAs('public/documents/'.$request->nric,$fileNameProfileImage);
-            }
-            if($request->hasFile('card_company')){
-                $extension = $request->file('card_company')->getClientOriginalExtension();
-                $fileNameCardCompany = 'card_company'.'.'.$extension;
-                $request->file('card_company')->storeAs('public/documents/'.$request->nric,$fileNameCardCompany);
-            }
-            if($request->hasFile('card_national')){
-                $extension = $request->file('card_national')->getClientOriginalExtension();
-                $fileNameCardNational = 'card_national'.'.'.$extension;
-                $request->file('card_national')->storeAs('public/documents/'.$request->nric,$fileNameCardNational);
-            }
+        if($documents != null) {
+            $documents->delete();
+            File::deleteDirectory(storage_path('public/documents/'.$request->nric));
+        }
+        $documents = new EmployeeDocuments();
+        if($request->hasFile('profile_image')){
+            $extension = $request->file('profile_image')->getClientOriginalExtension();
+            $fileNameProfileImage = 'profile_image'.'.'.$extension;
+            $request->file('profile_image')->storeAs('public/documents/'.$request->nric,$fileNameProfileImage);
             $documents->profile_image = $request->profile_image ? $fileNameProfileImage : null;
+        }
+         if($request->hasFile('card_company')){
+            $extension = $request->file('card_company')->getClientOriginalExtension();
+            $fileNameCardCompany = 'card_company'.'.'.$extension;
+            $request->file('card_company')->storeAs('public/documents/'.$request->nric,$fileNameCardCompany);
             $documents->card_company = $request->card_company ? $fileNameCardCompany : null;
-            $documents->card_national = $request->card_national ? $fileNameCardNational : null;
-            $documents->employee_id = $employee->id;
-            $documents->save();
-         } else {
-            if($request->hasFile('profile_image')){
-                $extension = $request->file('profile_image')->getClientOriginalExtension();
-                $fileNameProfileImage = 'profile_image'.'.'.$extension;
-                $request->file('profile_image')->storeAs('public/documents/'.$request->nric,$fileNameProfileImage);
-            }
-            if($request->hasFile('card_company')){
-                $extension = $request->file('card_company')->getClientOriginalExtension();
-                $fileNameCardCompany = 'card_company'.'.'.$extension;
-                $request->file('card_company')->storeAs('public/documents/'.$request->nric,$fileNameCardCompany);
 
-            }
-            if($request->hasFile('card_national')){
-                $extension = $request->file('card_national')->getClientOriginalExtension();
-                $fileNameCardNational = 'card_national'.'.'.$extension;
-                $request->file('card_national')->storeAs('public/documents/'.$request->nric,$fileNameCardNational);
-            }
+        }
+         if($request->hasFile('card_national')){
+            $extension = $request->file('card_national')->getClientOriginalExtension();
+            $fileNameCardNational = 'card_national'.'.'.$extension;
+            $request->file('card_national')->storeAs('public/documents/'.$request->nric,$fileNameCardNational);
+                $documents->card_national = $request->card_national ? $fileNameCardNational : null;
+        }
+        $documents->employee_id = $employee->id;
+        $documents->save();
 
-            $documents->update([
-            'profile_image'=> $request->profile_image ? $fileNameProfileImage : null,
-            'card_company' => $request->card_company ? $fileNameCardCompany : null,
-            'card_national' => $request->card_national ? $fileNameCardNational : null,
-            ]);
-
-         }
 
         $employeeBank = EmployeeBank::where('employee_id',$employee->id)->first();
         if ($employeeBank == null ) {

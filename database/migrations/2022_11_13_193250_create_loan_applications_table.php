@@ -22,9 +22,10 @@ return new class extends Migration
             $table->float('charge_fee')->default(0);
             $table->float('bunga')->default(0);
             $table->bigInteger('loan_ammount');
+            $table->double('disbursement')->nullable();
             $table->string('description');
             $table->foreignId('status_id')->references('id')->on('statuses');
-            $table->integer('remaining_payment');
+            $table->bigInteger('remaining_payment');
             $table->bigInteger('mountly_installment');
             $table->date('due_date');
             $table->string('status_due_date');

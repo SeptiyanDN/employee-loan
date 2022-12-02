@@ -63,7 +63,6 @@ class UserTableSeeder extends Seeder
                 'remember_token' => null,
                 'email_verified_at' => Carbon::now()->format('Y-m-d H:i:s'),
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
-
         ]);
         $createAnalyst->assignRole('Analyst');
         $employeeAnalyst = Employee::create([
@@ -153,6 +152,41 @@ EmployeeAddress::create([
     'country' => 'Indonesia',
     'employee_id' => $employee->id
 ]);
+
+// Create Finance Account
+$createFinance = User::create([
+    'id'             => 5,
+    'name'           => 'Tri Ambar Wati',
+    'email'          => 'finance@finance.com',
+    'password'       => '$2y$10$PadOOF6GiHJqI1IQhPZNjeXkKGPip9vJXdhB5ra6lrvZdcZFZDCjy',
+    'remember_token' => null,
+    'email_verified_at' => Carbon::now()->format('Y-m-d H:i:s'),
+    'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+
+]);
+$createFinance->assignRole('Finance');
+$finance = Employee::create([
+'name' => $createFinance->name,
+'nric' => 211011401522,
+'phone' => 81210917312,
+'number_id_staff'=> 5111015,
+'haveALoan'=> false,
+'user_id' => $createFinance->id
+]);
+EmployeeBank::create([
+'name' => 'Malaysia Bank',
+'number' => 6941374542,
+'employee_id' => $finance->id
+]);
+EmployeeAddress::create([
+'address_line_1' => 'Jl. KH Hasyim Ashari No.90',
+'landmark' => 'Wati Building',
+'city' => 'Banten',
+'state' => 'DKI Jakarta',
+'country' => 'Indonesia',
+'employee_id' => $finance->id
+]);
+
 
 
     }

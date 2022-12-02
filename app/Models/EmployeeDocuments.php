@@ -9,8 +9,9 @@ class EmployeeDocuments extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'document_name',
-        'document_type',
+        'card_company',
+        'card_company',
+        'card_national',
         'employee_id',
     ];
 }

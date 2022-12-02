@@ -11,6 +11,7 @@ use App\Models\EmployeeBank;
 use App\Models\LoanApplications;
 use App\Models\Status;
 use App\Models\TypeLoan;
+use App\Models\User;
 use App\Services\AuditLogService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -59,7 +60,7 @@ class LoanApplicationsController extends Controller
             })
 
             ->addColumn('Action', function ($loans){
-                if(auth()->user()->roles[0]->name === 'Admin' || auth()->user()->roles[0]->name === 'Analyst'){
+                if(auth()->user()->roles[0]->name === 'Admin' || auth()->user()->roles[0]->name === 'Analyst' || auth()->user()->roles[0]->name === 'Finance' ){
                     return '<a class="me-3" href="'.route('loans.show', $loans) .'">
                     <img src="https://dreamspos.dreamguystech.com/laravel/template/public/assets/img/icons/eye.svg" alt="img">
                 </a>
@@ -73,9 +74,7 @@ class LoanApplicationsController extends Controller
                 <a class="me-3" href="'.route('loans.edit', $loans) .'">
                 <img src="https://dreamspos.dreamguystech.com/laravel/template/public/assets/img/icons/edit.svg" alt="img">
             </a>
-                <a class="me-3">
-                    <img src="https://dreamspos.dreamguystech.com/laravel/template/public/assets/img/icons/delete.svg" alt="img">
-                </a>
+
                     ';
                 }
             })
@@ -84,7 +83,17 @@ class LoanApplicationsController extends Controller
     }
     public function analystProses()
     {
-        $loans = LoanApplications::where('status_id',1)->get();
+        $loans = LoanApplications::whereIn('status_id',array(1,9))->get();
+
+        if($loans != null) {
+            foreach($loans as $loan){
+                $loan->loan_ammount = Helpers::format_uang($loan->loan_ammount);
+                $loan->mountly_installment = Helpers::format_uang($loan->mountly_installment);
+                $loan->disbursement = Helpers::format_uang($loan->disbursement);
+                $loan->charge_fee = Helpers::format_uang($loan->charge_fee);
+                $loan->due_date = Helpers::tanggal_indonesia($loan->due_date);
+            }
+        }
         return view('module.loans.application_loans.analyst.index',compact('loans'));
     }
     public function ceoProses()
@@ -104,7 +113,10 @@ class LoanApplicationsController extends Controller
         $numberApplications = 'APPLOANS-'.strtoupper(date('Y')).strtoupper(date('m')).Helpers::tambah_nol_didepan((int)$last+1,5);
 
         $typeloans = TypeLoan::all();
-        $employees = Employee::whereNotIn('haveAloan',[true])->get();
+        $employees = User::role('employee')
+        ->leftJoin('employees','employees.user_id','=','users.id')
+        ->select('employees.*')
+        ->get();
         return view('module.loans.application_loans.new',compact('typeloans','employees','numberApplications'));
     }
 
@@ -133,18 +145,20 @@ class LoanApplicationsController extends Controller
             $sisaJatuhTempo = $now->diffInDays($dueDate);
             $tanggal = $sisaJatuhTempo.' hari lagi';
         }
+
         $loan = LoanApplications::create([
             'number_application' => $request->number_application,
             'employee_id' => $request->employee_id,
             'typeLoan_id' => $request->typeLoan_id,
             'period'      => $request->period_payment,
-            'charge_fee'  => $request->charge_fee,
+            'charge_fee'  => $request->loan_ammount * ($request->charge_fee / 100),
             'bunga'      => $request->bunga,
             'loan_ammount'  => $request->loan_ammount,
+            'disbursement' => $request->loan_ammount - $request->loan_ammount * $request->charge_fee / 100,
             'description'   => $request->description,
             'status_id' => 1,
             'remaining_payment' => $request->period_payment,
-            'mountly_installment' => $request->loan_ammount / $request->period_payment,
+            'mountly_installment' =>$request->loan_ammount / $request->period_payment + $request->loan_ammount * $request->bunga /100,
             'created_by_id' => auth()->user()->id,
             'due_date' => $dueDate,
             'status_due_date'=>$tanggal
@@ -173,6 +187,8 @@ class LoanApplicationsController extends Controller
         if($loan != null) {
             $loan->loan_ammount = Helpers::format_uang($loan->loan_ammount);
             $loan->mountly_installment = Helpers::format_uang($loan->mountly_installment);
+            $loan->disbursement = Helpers::format_uang($loan->disbursement);
+            $loan->charge_fee = Helpers::format_uang($loan->charge_fee);
             $loan->due_date = Helpers::tanggal_indonesia($loan->due_date);
         }
 
@@ -188,8 +204,6 @@ class LoanApplicationsController extends Controller
         return view('module.loans.application_loans.analyst',compact('loan','status'));
     }
 
-
-
     public function approveAnalystService(Request $request,LoanApplications $loanApplications){
         $loan = LoanApplications::all()->find($loanApplications);
         $comments = Comments::create([
@@ -199,6 +213,52 @@ class LoanApplicationsController extends Controller
         ]);
         $loan->update([
             'status_id' => $request->status_id
+        ]);
+
+        return redirect()->route('loans.show',$loan->id);
+    }
+
+    public function rejectAnalyst(LoanApplications $loanApplications){
+        $loan = LoanApplications::all()->find($loanApplications);
+
+        $status = Status::whereIn('id', array(3))->get();
+
+
+        return view('module.loans.application_loans.analyst.analystReject',compact('loan','status'));
+    }
+
+    public function rejectAnalystService(Request $request,LoanApplications $loanApplications){
+        $loan = LoanApplications::all()->find($loanApplications);
+        Comments::create([
+            'comments' => $request->comments,
+            'user_id' => auth()->user()->id,
+            'application_loan_id' => $loan->id,
+        ]);
+        $loan->update([
+            'status_id' => $request->status_id
+        ]);
+
+        return redirect()->route('loans.show',$loan->id);
+    }
+
+    public function resendingAnalyst(LoanApplications $loanApplications){
+        $loan = LoanApplications::all()->find($loanApplications);
+
+        $status = Status::whereIn('id', array(1))->get();
+
+
+        return view('module.loans.application_loans.admin.resending',compact('loan','status'));
+    }
+
+    public function resendingAnalystService(Request $request,LoanApplications $loanApplications){
+        $loan = LoanApplications::all()->find($loanApplications);
+        Comments::create([
+            'comments' => $request->comments,
+            'user_id' => auth()->user()->id,
+            'application_loan_id' => $loan->id,
+        ]);
+        $loan->update([
+            'status_id' => 9
         ]);
 
         return redirect()->route('loans.show',$loan->id);
@@ -226,6 +286,30 @@ class LoanApplicationsController extends Controller
 
         return redirect()->route('loans.show',$loan->id);
     }
+
+    public function rejectCEO(LoanApplications $loanApplications){
+        $loan = LoanApplications::all()->find($loanApplications);
+
+        $status = Status::whereIn('id', array(5))->get();
+
+
+        return view('module.loans.application_loans.ceo.ceoReject',compact('loan','status'));
+    }
+
+    public function rejectCEOService(Request $request,LoanApplications $loanApplications){
+        $loan = LoanApplications::all()->find($loanApplications);
+        Comments::create([
+            'comments' => $request->comments,
+            'user_id' => auth()->user()->id,
+            'application_loan_id' => $loan->id,
+        ]);
+        $loan->update([
+            'status_id' => $request->status_id
+        ]);
+
+        return redirect()->route('loans.show',$loan->id);
+    }
+
     public function sendingMoney(loanApplications $loanApplications){
         $loan = LoanApplications::all()->find($loanApplications);
         $status = Status::where('id',6)->get();
@@ -279,15 +363,17 @@ class LoanApplicationsController extends Controller
     {
         $loan = LoanApplications::all()->find($loanApplications);
 
+
         $loan->update([
             'typeLoan_id' => $request->typeLoan_id,
             'period'      => $request->period_payment,
-            'charge_fee'  => $request->charge_fee,
+            'charge_fee'  => $request->loan_ammount * ($request->charge_fee / 100),
+            'disbursement' => $request->loan_ammount - $request->loan_ammount * $request->charge_fee / 100,
             'bunga'      => $request->bunga,
             'loan_ammount'  => $request->loan_ammount,
             'description'   => $request->description,
             'remaining_payment' => $request->period_payment,
-            'mountly_installment' => $request->loan_ammount / $request->period_payment,
+            'mountly_installment' =>$request->loan_ammount / $request->period_payment + $request->loan_ammount * $request->bunga /100,
         ]);
 
         Employee::where('id',$loan->employee->id)->first();

@@ -25,7 +25,9 @@ class LoanApplications extends Model {
         'remaining_payment',
         'mountly_installment',
         'due_date',
-        'status_due_date'
+        'status_due_date',
+        'disbursement',
+        'charge_fee'
     ];
 
 

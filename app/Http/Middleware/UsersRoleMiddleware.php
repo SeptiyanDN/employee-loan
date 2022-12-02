@@ -13,7 +13,7 @@ class UsersRoleMiddleware
 
     public function handle($request, Closure $next, $guard = null)
     {
-        if ( $request->user()->hasAnyRole(['CEO', 'Admin','Analyst']) ) {
+        if ( $request->user()->hasAnyRole(['CEO', 'Admin','Analyst','Finance']) ) {
             return $next($request);
         }
 

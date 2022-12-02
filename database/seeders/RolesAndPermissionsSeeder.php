@@ -27,7 +27,7 @@ class RolesAndPermissionsSeeder extends Seeder
          Permission::create(['name' => 'permission_show']);
          Permission::create(['name' => 'permission_delete']);
          Permission::create(['name' => 'permission_access']);
-// dipakai
+        // dipakai
          Permission::create(['name' => 'role_access_employee']);
          Permission::create(['name' => 'add_new_employee']);
          Permission::create(['name'=>'analyst_proccesing']);
@@ -51,7 +51,8 @@ class RolesAndPermissionsSeeder extends Seeder
 
       Permission::create(['name' => 'dashboard_employee']);
       Permission::create(['name' => 'dashboard_admin']);
-// end
+      Permission::create(['name'=>'resending_application']);
+      // end
 
          Permission::create(['name' => 'role_create']);
          Permission::create(['name' => 'role_edit']);
@@ -83,14 +84,12 @@ class RolesAndPermissionsSeeder extends Seeder
       Permission::create(['name' => 'profile_password_edit']);
 
 
-
-
-
          // create roles and assign created permissions
          $role = Role::create(['name' => 'Admin'])
             ->givePermissionTo([
                 // dipakai
                 'add_new_employee',
+                'resending_application',
                 // end
                 'user_management_access',
                 'user_create',
@@ -188,5 +187,27 @@ class RolesAndPermissionsSeeder extends Seeder
 
          $role = Role::create(['name' => 'CEO']);
          $role->givePermissionTo(Permission::all());
+
+         $role = Role::create(['name' => 'Finance'])
+         ->givePermissionTo([
+            // dipakai
+            'sending_money',
+            // end
+            'status_create',
+            'user_access',
+            'status_edit',
+            'status_show',
+            'status_access',
+            'loan_application_show',
+            'loan_application_access',
+            'comment_create',
+            'comment_edit',
+            'comment_show',
+            'comment_access',
+            'profile_password_edit',
+            'dashboard_admin',
+        ]);
+
+
     }
 }
